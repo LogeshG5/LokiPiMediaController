@@ -12,13 +12,36 @@
 #include "Player.h"
 #include "GPIOUIController.h"
 #include "OMXVideoPlayerController.h"
+#include <wiringPi.h>
 using namespace std;
+
+UIController* uiController;
+
+
+void fnPlay()
+{
+	uiController->play();
+	delay(1000);
+}
+
+void registerCallbacks()
+{
+	wiringPiSetup();
+	wiringPiISR(1, INT_EDGE_FALLING, *fnPlay);
+}
 
 int main() {
 
-	UIController* uiController = Factory::getUIController();/*getUIControllerToControl(playerController);*/
+	uiController = Factory::getUIController();/*getUIControllerToControl(playerController);*/
+
+	registerCallbacks();
 
 	uiController->play();
+
+	for(;;)
+	{
+		delay(1000);
+	}
 
 	delete(uiController);
 
